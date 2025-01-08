@@ -38,6 +38,7 @@ services:
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms512M" # Configuração da memória da JVM do Kafka
 
   schema-registry:
     image: confluentinc/cp-schema-registry:6.2.0
