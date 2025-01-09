@@ -12,13 +12,16 @@ ENTRYPOINT ["dotnet", "watch", "run", "--no-launch-profile"]
 # Build e publish image
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["producer.csproj", "./"]
-RUN dotnet restore "producer.csproj"
+COPY ["producer/producer.csproj", "producer/"]
+RUN dotnet restore "producer/producer.csproj"
 COPY . .
+WORKDIR "/src/producer"
+RUN dotnet build "producer.csproj" -c Release -o /app/build
+
+FROM build AS publish
 RUN dotnet publish "producer.csproj" -c Release -o /app/publish
 
-# Final image (para produção)
 FROM base AS final
 WORKDIR /app
-COPY --from=build /app/publish .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "producer.dll"]
