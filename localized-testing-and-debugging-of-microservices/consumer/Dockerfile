@@ -1,12 +1,15 @@
-# Base runtime image (Corrigido: usar aspnet:7.0)
+# Base runtime image (para produção)
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 
-# Debug image
-FROM base as mydebug
-RUN echo "This is my debug image" > /tmp/image_type
+# Debug image (corrigido para permitir depuração)
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS debug
+WORKDIR /app
+COPY . . 
+EXPOSE 4022
+ENTRYPOINT ["dotnet", "watch", "run", "--no-launch-profile"]
 
-# Build and publish image
+# Build e publish image
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["consumer.csproj", "./"]
@@ -14,7 +17,7 @@ RUN dotnet restore "consumer.csproj"
 COPY . .
 RUN dotnet publish "consumer.csproj" -c Release -o /app/publish
 
-# Final image (Corrigido: usar aspnet:7.0)
+# Final image (para produção)
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
