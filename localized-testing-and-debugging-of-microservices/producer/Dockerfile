@@ -1,5 +1,5 @@
-# Base runtime image
-FROM mcr.microsoft.com/dotnet/runtime:7.0 AS base
+# Base runtime image (Corrigido: usar aspnet:7.0)
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 
 # Debug image
@@ -14,7 +14,7 @@ RUN dotnet restore "producer.csproj"
 COPY . .
 RUN dotnet publish "producer.csproj" -c Release -o /app/publish
 
-# Final image
+# Final image (Corrigido: usar aspnet:7.0)
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
